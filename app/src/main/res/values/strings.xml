@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">TSM</string>
+    <string name="title_activity_tsm">TsmActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Sozlash</string>
+    <string name="error_msg_unknown">An unexpected error occurred</string>
+
+
+    <string name="error_msg_no_internet">Not connected to internet</string>
+    <string name="error_msg_timeout">The server took too long to respond</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_tools">Tools</string>
+    <string name="menu_share">Share</string>
+    <string name="menu_send">Send</string>
+    <string name="title_activity_anime">AnimeActivity</string>
+    <string name="title_activity_search">SearchActivity</string>
+    <string name="title_activity_send">SendActivity</string>
+    <string name="title_activity_setting">SettingActivity</string>
+</resources>
