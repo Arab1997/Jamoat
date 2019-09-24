@@ -9,7 +9,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 
 public interface ApiClient {
-   // http://jamoatchilik.uz/api/list.php/?page=2
+   // https://jamoatchilik.uz/api/list.php/?page=2
 
     @GET("list.php/")
     Call<List<Example>> getPage(@Query("page") int pageIndex);
