@@ -13,20 +13,27 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class ApiRespon {
+public class ApiResponse {
     private static Retrofit retrofit = null;
+    private static ApiClient apiClient = null;
 
-    public static Retrofit getClient() {
-        retrofit = new Retrofit.Builder()
-                .baseUrl("http://jamoatchilik.uz/api/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(getUnsafeOkHttpClient().build())
-                .build();
+    public static ApiClient getClient() {
+        if (retrofit == null) {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl("http://jamoatchilik.uz/api/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(getUnsafeOkHttpClient().build())
+                    .build();
+        }
 
+        if (apiClient == null) {
+            apiClient = retrofit.create(ApiClient.class);
+        }
 
-        return retrofit;
+        return apiClient;
     }
-    public static OkHttpClient.Builder getUnsafeOkHttpClient(){
+
+    private static OkHttpClient.Builder getUnsafeOkHttpClient(){
         try {
             // Create a trust manager that does not validate certificate chains
             final TrustManager[] trustAllCerts = new TrustManager[]{

@@ -1,6 +1,4 @@
 package com.example.popularnews;
-/*
-import android.app.SearchManager;*/
 
 import android.annotation.SuppressLint;
 import android.app.SearchManager;
@@ -14,15 +12,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-/*import android.widget.SearchView*/;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -30,26 +24,20 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-
 import com.example.popularnews.model.Example;
 import com.example.popularnews.network.ApiClient;
-import com.example.popularnews.network.ApiRespon;
+import com.example.popularnews.network.ApiResponse;
 import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.concurrent.TimeoutException;
-
 
 import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
@@ -59,7 +47,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private Adapter adapter;
     private String TAG = MainActivity.class.getSimpleName();
     private TextView topHeadline;
-    ;
     private RelativeLayout errorLayout;
     private ImageView errorImage, search, xabar, added, talkif, btn_like, btn_dislike, options;
     private TextView errorTitle, errorMessage;
@@ -74,40 +61,32 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private static final int PAGE_START = 1;
     private static final int TOTAL_PAGES = 50;
 
-    private ApiClient apiClient;
+    private ApiClient apiClient = ApiResponse.getClient();
 
     @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         ButterKnife.bind(this);
         swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
-       /*  swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
-*/
 
         adapter = new Adapter(this);
-        //  topHeadline = findViewById(R.id.topheadelines);
         recyclerView = findViewById(R.id.recyclerView);
         layoutManager = new LinearLayoutManager(MainActivity.this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setHasFixedSize(true);
-        // onLoadingSwipeRefresh();
         recyclerView.setAdapter(adapter);
-        //recyclerView.addOnScrollListener(new PaginationListener((LinearLayoutManager) layoutManager) {
         recyclerView.addOnScrollListener(new PaginationScrollListener((LinearLayoutManager) layoutManager) {
             @Override
             protected void loadMoreItems() {
                 isLoading = true;
                 currentPage += 2;
-                /*isLoading = true;
-                currentPage ++;*/
                 LoadJson();
                 LoadJsonNext();
-
             }
 
             @Override
@@ -125,9 +104,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 return isLoading;
             }
         });
-        //  onLoadingSwipeRefresh();
 
-        progressBar = (ProgressBar) findViewById(R.id.main_progress);
+        progressBar = findViewById(R.id.main_progress);
         options = findViewById(R.id.options);
         search = findViewById(R.id.search);
         btn_like = findViewById(R.id.btn_like);
@@ -183,7 +161,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private void doRefresh() {
         progressBar.setVisibility(View.VISIBLE);
-        // assert callTopRatedMoviesApi() != null;
         adapter.getMovies().clear();
         adapter.notifyDataSetChanged();
         swipeRefreshLayout.setRefreshing(false);
@@ -192,30 +169,13 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     }
 
-    private Call<Example> apiClient() {
-        return null;
-    }
-
-    private Call<Example> callTopRatedMoviesApi() {
-        return null;
-    }
-
-          /*
-       get -Data
-   _________________________________________________________________________________________________
-    */
-
     public void LoadJson() {
         progressBar.setVisibility(View.VISIBLE);
-        Log.d(TAG, "LoadJson: ");
-        // hideErrorView();
-     //   currentPage = PAGE_START;
-        ApiClient apiClient = ApiRespon.getClient().create(ApiClient.class);
-        Call<List<Example>> call = apiClient.getResult();
-        call.enqueue(new Callback<List<Example>>() {
+        Call<List<Example>> result = apiClient.getResult();
+        result.enqueue(new Callback<List<Example>>() {
             @Override
             public void onResponse(Call<List<Example>> call, retrofit2.Response<List<Example>> response) {
-                progressBar.setVisibility(View.GONE); // qoshdim
+                progressBar.setVisibility(View.GONE);
 
                 if (response.isSuccessful() && response.body() != null) {
                     if (!examples.isEmpty()) {
@@ -226,11 +186,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                     if (currentPage <= TOTAL_PAGES) adapter.addLoadingFooter();
                     else isLastPage = true;
-                    //  adapter = new Adapter(this);
-                    //  adapter = new Adapter(examples, MainActivity.this);
                     recyclerView.setAdapter(adapter);
-
-                    // adapter.notifyDataSetChanged();
                     initListener();
                 }
             }
@@ -243,22 +199,11 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         });
     }
 
-
-    /*
- getNext page
-_________________________________________________________________________________________________
-*/
     private void LoadJsonNext() {
-        Log.d(TAG, "loadNextPage: " + currentPage);
-
-        ApiClient apiClient = ApiRespon.getClient().create(ApiClient.class);
         Call<List<Example>> call = apiClient.getPage(2);
         call.enqueue(new Callback<List<Example>>() {
             @Override
             public void onResponse(Call<List<Example>> call, retrofit2.Response<List<Example>> response) {
-//                Log.i(TAG, "onResponse: " + currentPage
-//                        + (response.raw().cacheResponse() != null ? "Cache" : "Network"));
-             //   adapter.removeLoadingFooter();
                 isLoading = false;
                 recyclerView.setAdapter(adapter);
                 adapter.addAll(examples);
@@ -277,29 +222,28 @@ ________________________________________________________________________________
     }
 
     private void initListener() {
-
         adapter.setOnItemClickListener(new Adapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 JSONObject jsonObject = null;
                 Intent intent = new Intent(MainActivity.this, AnimeActivity.class);
 
+                // jsonObject null bo'lgani uchun quyidagi items ham bo'sh bo'ladi.
                 Example items = new Gson().fromJson(jsonObject.toString(), Example.class);
                 intent.putExtra("fio", items.getFio());
                 intent.putExtra("taklif", items.getTaklif());
                 intent.putExtra("taklif", items.getTaklif());
-/*intent.putExtra("category", items.getCategory().getName());
-                intent.putExtra("region", items.getRegion().getName());*/
                 intent.putExtra("created_time", items.getCreatedTime());
                 intent.putExtra("dislike_count", items.getDislikeCount());
                 intent.putExtra("like_count", items.getLikeCount());
+
+                // TODO: 2019-09-24 where is startActivity(intent) method?
             }
         });
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE); /* SearchView */
@@ -312,14 +256,14 @@ ________________________________________________________________________________
             @Override
             public boolean onQueryTextSubmit(String query) {
                 if (query.length() > 2) {
-                    //     onLoadingSwipeRefresh();   /*LoadJson(query);*/
+                    // TODO: 2019-09-24
                 }
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                LoadJson();/*harflarni yozganda qidiradi */
+                LoadJson(); // TODO: 2019-09-24
                 return false;
             }
         });
@@ -334,29 +278,10 @@ ________________________________________________________________________________
         itemCount = 0;
         currentPage = PAGE_START;
         isLastPage = false;
-        //  adapter.clear();
         initListener();
         LoadJson();
-        //  LoadingPage();
         LoadJsonNext();
     }
-
-    private void onLoadingSwipeRefresh() {
-
-        swipeRefreshLayout.post(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        LoadJson();
-                    }
-                }
-        );
-    }
-    /*  @Override
-        public void retryPageLoad() {
-            LoadJsonNext();
-
-        }*/
 
 
     private void showErrorView(Throwable throwable) {
@@ -367,11 +292,6 @@ ________________________________________________________________________________
 
             txtError.setText(fetchErrorMessage(throwable));
         }
-    }
-
-    // @Override
-    public void retryPageLoad1() {
-        LoadJsonNext();
     }
 
     private String fetchErrorMessage(Throwable throwable) {
@@ -385,6 +305,7 @@ ________________________________________________________________________________
 
         return errorMsg;
     }
+
     private void hideErrorView() {
         if (errorLayout.getVisibility() == View.VISIBLE) {
             errorLayout.setVisibility(View.GONE);
